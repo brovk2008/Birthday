@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Birthday Countdown</title>
+  <style>
+    :root {
+      --bg-color: #d2c5b8;
+      --card-bg: #ffffff;
+      --digit-bg: #f3f4f6;
+      --text-main: #111111;
+      --text-muted: #666666;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #e5d9cd 0%, #c7d2fe 50%, #fecaca 100%);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .countdown-page {
+      transition: opacity 1s ease-in-out;
+    }
+
+    .event-card {
+      background: var(--card-bg);
+      padding: 40px;
+      border-radius: 28px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+
+    .event-title {
+      font-size: 32px;
+      font-weight: 500;
+      color: var(--text-main);
+    }
+
+    .arrow-circle {
+      width: 36px;
+      height: 36px;
+      border: 2px solid #9ca3af;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #6b7280;
+    }
+
+    .arrow-circle svg { width: 20px; height: 20px; }
+
+    .timer-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .timer-group {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .digit-pair {
+      display: flex;
+      gap: 6px;
+    }
+
+    .digit {
+      background: var(--digit-bg);
+      width: 45px;
+      height: 65px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      font-weight: 400;
+      border-radius: 8px;
+      color: var(--text-main);
+    }
+
+    .separator {
+      font-size: 32px;
+      font-weight: 300;
+      margin-bottom: 30px;
+    }
+
+    .label {
+      font-size: 22px;
+      color: var(--text-main);
+    }
+
+    /* Glass shards canvas */
+    #shatter-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="countdown-page" id="countdown-page">
+    <div class="event-card">
+      <div class="card-header">
+        <span class="event-title">Event</span>
+        <div class="arrow-circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </div>
+      </div>
+
+      <div class="timer-container">
+        <div class="timer-group">
+          <div class="digit-pair">
+            <div class="digit" id="days-1">0</div>
+            <div class="digit" id="days-2">0</div>
+          </div>
+          <span class="label">days</span>
+        </div>
+
+        <div class="separator">:</div>
+
+        <div class="timer-group">
+          <div class="digit-pair">
+            <div class="digit" id="hours-1">0</div>
+            <div class="digit" id="hours-2">0</div>
+          </div>
+          <span class="label">hours</span>
+        </div>
+
+        <div class="separator">:</div>
+
+        <div class="timer-group">
+          <div class="digit-pair">
+            <div class="digit" id="mins-1">0</div>
+            <div class="digit" id="mins-2">0</div>
+          </div>
+          <span class="label">minutes</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <canvas id="shatter-canvas"></canvas>
+
+  <script>
+    const countdownPage = document.getElementById('countdown-page');
+    const canvas = document.getElementById('shatter-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    function glassBreakEffect(callback) {
+      canvas.style.display = 'block';
+      const particles = [];
+      const numParticles = 200;
+      for(let i = 0; i < numParticles; i++){
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          dx: (Math.random() - 0.5) * 8,
+          dy: (Math.random() - 0.5) * 8,
+          size: Math.random() * 8 + 2
+        });
+      }
+      let frames = 0;
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          p.x += p.dx;
+          p.y += p.dy;
+          p.dy += 0.3;
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(p.x, p.y, p.size, p.size);
+        });
+        frames++;
+        if(frames < 50){
+          requestAnimationFrame(animate);
+        } else {
+          canvas.style.display = 'none';
+          if(callback) callback();
+        }
+      }
+      animate();
+    }
+
+    function updateCountdown() {
+      const targetDate = new Date("2026-01-02T00:00:00Z").getTime();
+      const now = new Date().getTime();
+      const difference = targetDate - now;
+
+      if (difference <= 0) {
+        glassBreakEffect(() => {
+          window.location.href = "dino.html";
+        });
+        return;
+      }
+
+      const d = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const h = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const m = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+
+      const format = (num) => num.toString().padStart(2, '0').split('');
+
+      const dayDigits = format(d);
+      const hourDigits = format(h);
+      const minDigits = format(m);
+
+      document.getElementById('days-1').innerText = dayDigits[0];
+      document.getElementById('days-2').innerText = dayDigits[1];
+      document.getElementById('hours-1').innerText = hourDigits[0];
+      document.getElementById('hours-2').innerText = hourDigits[1];
+      document.getElementById('mins-1').innerText = minDigits[0];
+      document.getElementById('mins-2').innerText = minDigits[1];
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+  </script>
+</body>
+</html>

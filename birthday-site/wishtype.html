@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wish Type Selector</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Modak&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #fbc2eb url('https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+      background-size: cover;
+      background-position: center;
+      font-family: 'Modak', cursive;
+    }
+
+    .container {
+      text-align: center;
+      width: 100%;
+      max-width: 800px;
+    }
+
+    h1 {
+      color: #4ade80;
+      font-size: 4rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-shadow: 3px 3px 0px #166534;
+      margin-bottom: 50px;
+      padding: 0 20px;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 40px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .wish-btn {
+      width: 280px;
+      height: 90px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 1.5rem;
+      color: #000;
+      background: linear-gradient(to right, #bde0fe, #ff8fa3);
+      box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .wish-btn:hover {
+      transform: translateY(-5px);
+      box-shadow: 0px 12px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .wish-btn:active {
+      transform: translateY(2px);
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 2.5rem;
+      }
+      .wish-btn {
+        width: 220px;
+        height: 70px;
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Which type of wishes would you like?</h1>
+    <div class="button-group">
+      <button class="wish-btn" onclick="selectWish('Simple')">Simple</button>
+      <button class="wish-btn" onclick="selectWish('Advance')">Advance</button>
+    </div>
+  </div>
+
+  <script>
+    function selectWish(type) {
+      if (type === 'Simple') {
+        window.location.href = "simple.html";
+      } else if (type === 'Advance') {
+        window.location.href = "advance.html";
+      }
+    }
+  </script>
+</body>
+</html>

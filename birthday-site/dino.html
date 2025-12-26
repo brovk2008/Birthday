@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dino Game</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: #87CEEB; /* blue sky */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    h2 {
+      color: #111;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      cursor: pointer;
+      z-index: 10;
+      font-size: 80px;
+    }
+
+    #score-display {
+      display: none;
+      margin-top: 10px;
+      font-size: 20px;
+      color: #111;
+    }
+
+    canvas {
+      background: #F4E7C5; /* desert road */
+      border: 2px solid #ccc;
+      margin-top: 100px;
+      display: none;
+    }
+
+    /* Pixel style for messages and buttons */
+    .pixel-font {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 20px;
+      color: #111;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    /* Bouncy animations */
+    @keyframes bounceIn {
+      0% { transform: translate(-50%, -150%) scale(2); opacity: 0; }
+      50% { transform: translate(-50%, -40%) scale(1.2); opacity: 1; }
+      70% { transform: translate(-50%, -55%) scale(0.9); }
+      100% { transform: translate(-50%, 50px) scale(0.5); opacity: 1; }
+    }
+
+    .bounce {
+      animation: bounceIn 1.5s forwards;
+    }
+
+    @keyframes bounceMessage {
+      0% { transform: translate(-50%, -150%) scale(2); opacity: 0; }
+      50% { transform: translate(-50%, -40%) scale(1.2); opacity: 1; }
+      70% { transform: translate(-50%, -55%) scale(0.9); }
+      100% { transform: translate(-50%, 50px) scale(1); opacity: 1; }
+    }
+
+    .bounce-msg {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation: bounceMessage 1.5s forwards;
+      z-index: 10;
+    }
+
+    /* Restart container */
+    #restart-container {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      z-index: 15;
+    }
+
+    /* Bomb video */
+    #bomb-video {
+      display: none;
+      width: 600px;
+      height: 400px;
+      z-index: 20;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Pre-game text -->
+  <h2 id="pre-game-text">Make a score of 18!</h2>
+
+  <!-- Game canvas -->
+  <canvas id="dino-game" width="800" height="200"></canvas>
+
+  <!-- Score display -->
+  <div id="score-display">Score: 0</div>
+
+  <!-- Restart message & button -->
+  <div id="restart-container">
+    <div id="fail-message" class="pixel-font bounce-msg"></div>
+    <button id="restart-btn" class="pixel-font" style="margin-top: 20px;">RESTART</button>
+  </div>
+
+  <!-- Bomb video -->
+  <video id="bomb-video" src="assets/bomb.mp4"></video>
+
+  <script>
+    const canvas = document.getElementById("dino-game");
+    const ctx = canvas.getContext("2d");
+    const preGameText = document.getElementById("pre-game-text");
+    const scoreDisplay = document.getElementById("score-display");
+    const restartContainer = document.getElementById("restart-container");
+    const failMessage = document.getElementById("fail-message");
+    const restartBtn = document.getElementById("restart-btn");
+    const bombVideo = document.getElementById("bomb-video");
+
+    let dino, cactusArray, score, gameOver, scoreInterval;
+
+    function resetGame() {
+      dino = { x: 50, y: 150, width: 40, height: 40, dy: 0, gravity: 0.8, jumpPower: -12, grounded: true };
+      cactusArray = [];
+      score = 0;
+      gameOver = false;
+      canvas.style.display = "block";
+      scoreDisplay.style.display = "block";
+      restartContainer.style.display = "none";
+      scoreDisplay.innerText = "Score: 0";
+      bombVideo.style.display = "none";
+    }
+
+    function startPreGameAnimation() {
+      preGameText.classList.add("bounce");
+
+      preGameText.addEventListener("click", () => {
+        preGameText.style.display = "none";
+        resetGame();
+        startGameLoop();
+      });
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.code === "Space" && dino.grounded && !gameOver) {
+        dino.dy = dino.jumpPower;
+        dino.grounded = false;
+      }
+    });
+
+    function spawnCactus() {
+      const cactus = { x: canvas.width, y: 160, width: 20, height: 40, passed: false };
+      cactusArray.push(cactus);
+    }
+
+    setInterval(() => {
+      if (!gameOver && canvas.style.display === "block") spawnCactus();
+    }, 2000);
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "#228B22";
+      ctx.fillRect(dino.x, dino.y, dino.width, dino.height);
+
+      ctx.fillStyle = "#0a7f0a";
+      cactusArray.forEach(c => ctx.fillRect(c.x, c.y, c.width, c.height));
+    }
+
+    function update() {
+      if (gameOver) return;
+
+      dino.y += dino.dy;
+      dino.dy += dino.gravity;
+      if (dino.y >= 150) {
+        dino.y = 150;
+        dino.dy = 0;
+        dino.grounded = true;
+      }
+
+      cactusArray.forEach(c => {
+        c.x -= 6;
+        if (!c.passed && dino.x > c.x + c.width) {
+          score++;
+          scoreDisplay.innerText = "Score: " + score;
+          c.passed = true;
+        }
+      });
+
+      cactusArray.forEach(c => {
+        if (dino.x < c.x + c.width &&
+            dino.x + dino.width > c.x &&
+            dino.y < c.y + c.height &&
+            dino.y + dino.height > c.y) {
+          endGame();
+        }
+      });
+
+      draw();
+      requestAnimationFrame(update);
+    }
+
+    function startGameLoop() {
+      update();
+    }
+
+    function endGame() {
+      gameOver = true;
+
+      if (score === 18) {
+        canvas.style.display = "none";
+        scoreDisplay.style.display = "none";
+        bombVideo.style.display = "block";
+        bombVideo.play();
+        bombVideo.onended = () => { window.location.href = "specialday.html"; };
+      } else {
+        canvas.style.display = "none";
+        scoreDisplay.style.display = "none";
+        restartContainer.style.display = "block";
+        if (score < 18) {
+          failMessage.innerText = "cmon you cant lie abt your age here lmaoo";
+        } else {
+          failMessage.innerText = "nah i dont believe you???!!!";
+        }
+      }
+    }
+
+    restartBtn.addEventListener("click", () => {
+      resetGame();
+      startGameLoop();
+    });
+
+    window.addEventListener("load", () => {
+      setTimeout(startPreGameAnimation, 500);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Birthday Greeting</title>
+  <style>
+  body {
+    margin: 0;
+    height: 100vh;
+    background-color: #BCE3E8; /* Light blue */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Arial', sans-serif;
+    position: relative;
+    overflow: hidden;
+    animation: fadeIn 1s ease forwards;
+  }
+
+  @keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  .container {
+    position: relative;
+    width: 80%;
+    height: 80%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* Left Side Decorations */
+  .left-decor {
+    position: relative;
+  }
+  .penguin {
+    width: 150px;
+    position: absolute;
+    bottom: -50px;
+    left: 50px;
+  }
+  .balloons-left {
+    width: 120px;
+    position: absolute;
+    bottom: 80px;
+    left: 80px;
+  }
+  .blue-bow {
+    width: 180px;
+    position: absolute;
+    top: -50px;
+    left: 20px;
+  }
+
+  /* Right Side Decorations */
+  .right-decor {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  .cake {
+    width: 300px;
+  }
+  .balloons-right {
+    width: 200px;
+    margin-bottom: -50px;
+    margin-right: 50px;
+  }
+
+  /* Message with Step-by-Step Animation */
+  .message {
+    font-size: 4rem;
+    font-weight: bold;
+    color: #FF7F50; /* Coral */
+    text-align: center;
+    line-height: 1.2;
+    text-shadow: 3px 3px 0 #FF4500;
+  }
+
+  .message span {
+    display: inline-block;
+    opacity: 0;
+    transform: scale(0);
+    animation: burst 0.8s forwards;
+  }
+
+  @keyframes burst {
+    0% {
+      opacity: 0;
+      transform: scale(0);
+    }
+    60% {
+      opacity: 1;
+      transform: scale(1.2);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="left-decor">
+    <img src="https://i.imgur.com/4y3qG4j.png" alt="Blue Bow" class="blue-bow">
+    <img src="https://i.imgur.com/9R613Z3.png" alt="Penguin" class="penguin">
+    <img src="https://i.imgur.com/0gC7X8r.png" alt="Balloons" class="balloons-left">
+  </div>
+
+  <div class="message" id="message">
+    <!-- Words will be added dynamically via JS -->
+  </div>
+
+  <div class="right-decor">
+    <img src="https://i.imgur.com/s1x592w.png" alt="Balloons" class="balloons-right">
+    <img src="https://i.imgur.com/a0d6Z4b.png" alt="Birthday Cake" class="cake">
+  </div>
+</div>
+
+<script>
+  const messageWords = ["DO", "YOU", "KNOW", "IT'S", "A", "SPECIAL", "DAY", "TODAYY?"];
+  const messageContainer = document.getElementById("message");
+
+  messageWords.forEach((word, index) => {
+    const span = document.createElement("span");
+    span.innerText = word + " ";
+    span.style.animationDelay = `${index * 0.3}s`;
+    messageContainer.appendChild(span);
+  });
+
+  // Auto-navigate to next page after animation
+  setTimeout(() => {
+    window.location.href = "bday.html";
+  }, 5000);
+</script>
+
+</body>
+</html>

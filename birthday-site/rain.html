@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Raining Words Birthday</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Press Start 2P', cursive;
+      background: linear-gradient(to top, #87CEEB 0%, #B0E0E6 100%);
+      position: relative;
+    }
+
+    .cloud {
+      position: absolute;
+      background: rgba(255,255,255,0.8);
+      border-radius: 50%;
+      filter: blur(10px);
+    }
+
+    .cloud1 { width: 200px; height: 60px; top: 50px; left: 50px; }
+    .cloud2 { width: 150px; height: 50px; top: 100px; left: 300px; }
+    .cloud3 { width: 180px; height: 55px; top: 150px; left: 600px; }
+
+    .water {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 150px;
+      background: #3CA0F0;
+      background: linear-gradient(to top, #3CA0F0 50%, #5BB0F5 100%);
+      box-shadow: inset 0 0 20px rgba(255,255,255,0.2);
+      overflow: hidden;
+    }
+
+    .wave {
+      position: absolute;
+      width: 200%;
+      height: 100%;
+      background: rgba(255,255,255,0.15);
+      border-radius: 100%;
+      animation: waveMove 4s infinite linear;
+    }
+
+    @keyframes waveMove {
+      0% { transform: translateX(0) translateY(0); }
+      50% { transform: translateX(-50%) translateY(5px); }
+      100% { transform: translateX(0) translateY(0); }
+    }
+
+    .word {
+      position: absolute;
+      font-size: 24px;
+      color: #FF4500;
+      opacity: 0;
+      transform: translateY(-50px);
+      transition: all 1s ease;
+      pointer-events: none;
+    }
+
+    .floating {
+      transition: all 1s ease-in-out;
+      color: #FFD700;
+    }
+
+    .final {
+      position: absolute;
+      font-size: 50px;
+      color: #FFD700;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(1);
+      text-align: center;
+      z-index: 10;
+      opacity: 0;
+      transition: all 1s ease;
+    }
+
+    .zoom-out {
+      animation: zoomOut 1s forwards;
+    }
+
+    @keyframes zoomOut {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(0); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="cloud cloud1"></div>
+  <div class="cloud cloud2"></div>
+  <div class="cloud cloud3"></div>
+
+  <div class="water">
+    <div class="wave"></div>
+  </div>
+
+  <div id="words-container"></div>
+
+  <div id="final-text" class="final">
+    IT'S YOUR BIRTHDAY!!
+  </div>
+
+  <script>
+    const wordsContainer = document.getElementById('words-container');
+    const finalText = document.getElementById('final-text');
+
+    const rainingWords = [
+      "HAPPY","BIRTHDAY","JASMIN",
+      "HAPPY","BIRTHDAY","JASMIN"
+    ];
+
+    const wordElements = [];
+
+    rainingWords.forEach((text, index) => {
+      const span = document.createElement('span');
+      span.className = 'word';
+      span.innerText = text;
+      span.style.left = `${Math.random() * (window.innerWidth - 100)}px`;
+      span.style.top = `-50px`;
+      wordsContainer.appendChild(span);
+      wordElements.push(span);
+
+      setTimeout(() => {
+        span.style.opacity = 1;
+        span.style.top = `${window.innerHeight - 170 + Math.random()*20}px`;
+        span.style.transition = `top ${1 + Math.random()}s ease, opacity 0.5s ease`;
+      }, index * 300);
+    });
+
+    setTimeout(() => {
+      wordElements.forEach((span, i) => {
+        span.classList.add('floating');
+        span.style.top = `${window.innerHeight - 160}px`;
+        span.style.left = `${50 + i*200}px`;
+        span.style.transform = 'translateX(0)';
+        span.style.opacity = 1;
+      });
+
+      setTimeout(() => {
+        wordsContainer.style.display = 'none';
+        finalText.style.opacity = 1;
+        finalText.style.transform = 'translate(-50%, -50%) scale(1.5)';
+      }, 1500);
+
+      setTimeout(() => {
+        finalText.classList.add('zoom-out');
+        setTimeout(() => {
+          window.location.href = 'wishtype.html';
+        }, 1000);
+      }, 3000);
+
+    }, rainingWords.length * 300 + 800);
+  </script>
+</body>
+</html>

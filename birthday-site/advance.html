@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Are You Sure?!</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #fdf264;
+      font-family: 'Comic Sans MS', 'Chalkboard SE', cursive;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    h1 {
+      color: #d11fb5;
+      font-size: clamp(3rem, 10vw, 5.5rem);
+      -webkit-text-stroke: 3px #33105d;
+      text-shadow: 5px 5px #33105d;
+      margin-bottom: 80px;
+      text-transform: uppercase;
+      text-align: center;
+      z-index: 2;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 50px;
+      box-sizing: border-box;
+      z-index: 10;
+    }
+
+    .btn {
+      padding: 12px 45px;
+      font-size: 2.5rem;
+      border-radius: 40px;
+      border: none;
+      cursor: pointer;
+      color: #1a1a5e;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    #no-btn {
+      background-color: #f14134;
+      position: relative;
+    }
+
+    #yes-btn {
+      background-color: #61cc6d;
+    }
+
+    #yes-btn:hover {
+      transform: scale(1.1);
+      background-color: #72ff81;
+      box-shadow: 0 0 20px #61cc6d, 0 0 40px #61cc6d, 0 0 60px #fff;
+    }
+
+    .face-crop {
+      position: fixed;
+      bottom: -50px;
+      width: 500px;
+      max-width: 90vw;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+  <h1>ARE YOU SURE?!</h1>
+  <div class="container">
+    <button id="no-btn" class="btn">Back</button>
+    <button id="yes-btn" class="btn">Next</button>
+  </div>
+  <img src="https://i.imgur.com/vHUPkCj.png" alt="Face" class="face-crop">
+
+  <script>
+    const noBtn = document.getElementById('no-btn');
+    const yesBtn = document.getElementById('yes-btn');
+
+    const moveButton = () => {
+      noBtn.style.position = 'absolute';
+      const maxX = window.innerWidth - noBtn.offsetWidth;
+      const maxY = window.innerHeight - noBtn.offsetHeight;
+      const randomX = Math.floor(Math.random() * maxX);
+      const randomY = Math.floor(Math.random() * maxY);
+      noBtn.style.left = randomX + 'px';
+      noBtn.style.top = randomY + 'px';
+    };
+
+    noBtn.addEventListener('mouseenter', moveButton);
+    noBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      moveButton();
+    });
+
+    yesBtn.addEventListener('click', () => {
+      // Navigate to enjoy page (scary.mp4, heartbeat, and final video would be handled separately)
+      window.location.href = "enjoy.html";
+    });
+  </script>
+</body>
+</html>
