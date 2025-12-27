@@ -2,251 +2,402 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dino Game</title>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
-    body {
+    * {
       margin: 0;
-      font-family: 'Inter', sans-serif;
-      background: #87CEEB; /* blue sky */
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(180deg, #87CEEB 0%, #E0F6FF 100%);
+      font-family: 'Press Start 2P', cursive;
       display: flex;
-      flex-direction: column;
+      justify-content: center;
       align-items: center;
-      justify-content: flex-start;
-      height: 100vh;
+      min-height: 100vh;
       overflow: hidden;
       position: relative;
     }
 
-    h2 {
-      color: #111;
+    .game-container {
+      position: relative;
+      width: 100%;
+      max-width: 800px;
+      height: 600px;
+      background: linear-gradient(180deg, #87CEEB 0%, #E0F6FF 50%, #F4E7C5 50%, #F4E7C5 100%);
+      border: 5px solid #333;
+      overflow: hidden;
+    }
+
+    .game-title {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      opacity: 0;
-      cursor: pointer;
-      z-index: 10;
-      font-size: 80px;
+      font-size: 2rem;
+      color: #FF6B6B;
+      text-shadow: 3px 3px 0px #333, 6px 6px 0px rgba(0,0,0,0.2);
+      z-index: 100;
+      white-space: nowrap;
+      animation: bounceIn 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
     }
 
-    #score-display {
-      display: none;
-      margin-top: 10px;
-      font-size: 20px;
-      color: #111;
-    }
-
-    canvas {
-      background: #F4E7C5; /* desert road */
-      border: 2px solid #ccc;
-      margin-top: 100px;
-      display: none;
-    }
-
-    /* Pixel style for messages and buttons */
-    .pixel-font {
-      font-family: 'Press Start 2P', cursive;
-      font-size: 20px;
-      color: #111;
-      text-align: center;
-      cursor: pointer;
-    }
-
-    /* Bouncy animations */
     @keyframes bounceIn {
-      0% { transform: translate(-50%, -150%) scale(2); opacity: 0; }
-      50% { transform: translate(-50%, -40%) scale(1.2); opacity: 1; }
-      70% { transform: translate(-50%, -55%) scale(0.9); }
-      100% { transform: translate(-50%, 50px) scale(0.5); opacity: 1; }
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -200%);
+        font-size: 4rem;
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+        font-size: 2rem;
+      }
     }
 
-    .bounce {
-      animation: bounceIn 1.5s forwards;
+    .title-move-up {
+      animation: moveToTop 0.8s ease-out forwards !important;
+    }
+
+    @keyframes moveToTop {
+      0% {
+        transform: translate(-50%, -50%);
+        font-size: 2rem;
+      }
+      100% {
+        transform: translate(-50%, -480px);
+        font-size: 1.2rem;
+      }
+    }
+
+    #gameCanvas {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: linear-gradient(180deg, #87CEEB 0%, #E0F6FF 50%, #F4E7C5 50%, #F4E7C5 100%);
+    }
+
+    .game-over-screen {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      z-index: 200;
+      display: none;
+    }
+
+    .game-over-message {
+      font-size: 1.5rem;
+      color: #FF6B6B;
+      text-shadow: 3px 3px 0px #333, 6px 6px 0px rgba(0,0,0,0.2);
+      margin-bottom: 30px;
+      white-space: nowrap;
+      animation: bounceMessage 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     }
 
     @keyframes bounceMessage {
-      0% { transform: translate(-50%, -150%) scale(2); opacity: 0; }
-      50% { transform: translate(-50%, -40%) scale(1.2); opacity: 1; }
-      70% { transform: translate(-50%, -55%) scale(0.9); }
-      100% { transform: translate(-50%, 50px) scale(1); opacity: 1; }
+      0% {
+        opacity: 0;
+        transform: translateY(-100px);
+        font-size: 3rem;
+      }
+      60% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+        font-size: 1.5rem;
+      }
     }
 
-    .bounce-msg {
+    .score-display {
+      font-size: 1.2rem;
+      color: #333;
+      text-shadow: 2px 2px 0px #fff;
+      margin-bottom: 20px;
+    }
+
+    button {
+      font-family: 'Press Start 2P', cursive;
+      background: #FFD700;
+      border: 3px solid #333;
+      padding: 15px 30px;
+      font-size: 1rem;
+      cursor: pointer;
+      color: #333;
+      transition: all 0.1s;
+      box-shadow: 4px 4px 0px #333;
+    }
+
+    button:hover {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0px #333;
+    }
+
+    button:active {
+      transform: translate(4px, 4px);
+      box-shadow: 0px 0px 0px #333;
+    }
+
+    .score-counter {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      animation: bounceMessage 1.5s forwards;
-      z-index: 10;
-    }
-
-    /* Restart container */
-    #restart-container {
-      display: none;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-      z-index: 15;
-    }
-
-    /* Bomb video */
-    #bomb-video {
-      display: none;
-      width: 600px;
-      height: 400px;
-      z-index: 20;
+      top: 20px;
+      right: 20px;
+      font-size: 1.2rem;
+      color: #333;
+      text-shadow: 2px 2px 0px #FFD700;
+      z-index: 50;
     }
   </style>
 </head>
 <body>
-
-  <!-- Pre-game text -->
-  <h2 id="pre-game-text">Make a score of 18!</h2>
-
-  <!-- Game canvas -->
-  <canvas id="dino-game" width="800" height="200"></canvas>
-
-  <!-- Score display -->
-  <div id="score-display">Score: 0</div>
-
-  <!-- Restart message & button -->
-  <div id="restart-container">
-    <div id="fail-message" class="pixel-font bounce-msg"></div>
-    <button id="restart-btn" class="pixel-font" style="margin-top: 20px;">RESTART</button>
+  <div class="game-container">
+    <div class="score-counter">
+      SCORE: <span id="score">0</span>/18
+    </div>
+    <div class="game-title" id="gameTitle">MAKE A SCORE OF 18!</div>
+    <canvas id="gameCanvas"></canvas>
+    <div class="game-over-screen" id="gameOverScreen">
+      <div class="game-over-message" id="gameOverMessage"></div>
+      <div class="score-display">FINAL SCORE: <span id="finalScore">0</span></div>
+      <button id="restartBtn">RESTART</button>
+    </div>
   </div>
 
-  <!-- Bomb video -->
-  <video id="bomb-video" src="assets/bomb.mp4"></video>
-
   <script>
-    const canvas = document.getElementById("dino-game");
-    const ctx = canvas.getContext("2d");
-    const preGameText = document.getElementById("pre-game-text");
-    const scoreDisplay = document.getElementById("score-display");
-    const restartContainer = document.getElementById("restart-container");
-    const failMessage = document.getElementById("fail-message");
-    const restartBtn = document.getElementById("restart-btn");
-    const bombVideo = document.getElementById("bomb-video");
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const gameTitle = document.getElementById('gameTitle');
+    const gameOverScreen = document.getElementById('gameOverScreen');
+    const gameOverMessage = document.getElementById('gameOverMessage');
+    const scoreCounter = document.getElementById('score');
+    const finalScore = document.getElementById('finalScore');
+    const restartBtn = document.getElementById('restartBtn');
 
-    let dino, cactusArray, score, gameOver, scoreInterval;
+    canvas.width = 800;
+    canvas.height = 600;
 
-    function resetGame() {
-      dino = { x: 50, y: 150, width: 40, height: 40, dy: 0, gravity: 0.8, jumpPower: -12, grounded: true };
-      cactusArray = [];
-      score = 0;
-      gameOver = false;
-      canvas.style.display = "block";
-      scoreDisplay.style.display = "block";
-      restartContainer.style.display = "none";
-      scoreDisplay.innerText = "Score: 0";
-      bombVideo.style.display = "none";
+    let gameStarted = false;
+    let gameOver = false;
+    let score = 0;
+
+    // Dino properties
+    const dino = {
+      x: 50,
+      y: canvas.height - 120,
+      width: 40,
+      height: 40,
+      velocityY: 0,
+      jumping: false,
+      color: '#228B22'
+    };
+
+    // Cacti array
+    let cacti = [];
+    let cactusSpawnRate = 150;
+    let frameCounter = 0;
+
+    // Gravity
+    const gravity = 0.6;
+    const jumpPower = 12;
+
+    function drawDino() {
+      ctx.fillStyle = dino.color;
+      ctx.fillRect(dino.x, dino.y, dino.width, dino.height);
+      ctx.strokeStyle = '#333';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(dino.x, dino.y, dino.width, dino.height);
     }
 
-    function startPreGameAnimation() {
-      preGameText.classList.add("bounce");
-
-      preGameText.addEventListener("click", () => {
-        preGameText.style.display = "none";
-        resetGame();
-        startGameLoop();
-      });
+    function drawCactus(cactus) {
+      ctx.fillStyle = '#0a7f0a';
+      ctx.fillRect(cactus.x, cactus.y, cactus.width, cactus.height);
+      ctx.strokeStyle = '#333';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(cactus.x, cactus.y, cactus.width, cactus.height);
     }
 
-    document.addEventListener("keydown", (e) => {
-      if (e.code === "Space" && dino.grounded && !gameOver) {
-        dino.dy = dino.jumpPower;
-        dino.grounded = false;
-      }
-    });
+    function drawGround() {
+      ctx.fillStyle = '#F4E7C5';
+      ctx.fillRect(0, canvas.height / 2, canvas.width, canvas.height / 2);
+      ctx.strokeStyle = '#333';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(0, canvas.height / 2, canvas.width, canvas.height / 2);
+    }
 
     function spawnCactus() {
-      const cactus = { x: canvas.width, y: 160, width: 20, height: 40, passed: false };
-      cactusArray.push(cactus);
+      const cactus = {
+        x: canvas.width,
+        y: canvas.height - 80,
+        width: 30,
+        height: 50,
+        velocity: -6,
+        scored: false
+      };
+      cacti.push(cactus);
     }
 
-    setInterval(() => {
-      if (!gameOver && canvas.style.display === "block") spawnCactus();
-    }, 2000);
+    function jump() {
+      if (!dino.jumping && gameStarted) {
+        dino.velocityY = jumpPower;
+        dino.jumping = true;
+      }
+    }
 
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      ctx.fillStyle = "#228B22";
-      ctx.fillRect(dino.x, dino.y, dino.width, dino.height);
-
-      ctx.fillStyle = "#0a7f0a";
-      cactusArray.forEach(c => ctx.fillRect(c.x, c.y, c.width, c.height));
+    function checkCollision(dino, cactus) {
+      return dino.x < cactus.x + cactus.width &&
+             dino.x + dino.width > cactus.x &&
+             dino.y < cactus.y + cactus.height &&
+             dino.y + dino.height > cactus.y;
     }
 
     function update() {
-      if (gameOver) return;
+      if (!gameStarted || gameOver) return;
 
-      dino.y += dino.dy;
-      dino.dy += dino.gravity;
-      if (dino.y >= 150) {
-        dino.y = 150;
-        dino.dy = 0;
-        dino.grounded = true;
+      // Apply gravity
+      dino.velocityY += gravity;
+      dino.y += dino.velocityY;
+
+      // Ground collision
+      const groundY = canvas.height - 120;
+      if (dino.y >= groundY) {
+        dino.y = groundY;
+        dino.velocityY = 0;
+        dino.jumping = false;
       }
 
-      cactusArray.forEach(c => {
-        c.x -= 6;
-        if (!c.passed && dino.x > c.x + c.width) {
-          score++;
-          scoreDisplay.innerText = "Score: " + score;
-          c.passed = true;
-        }
-      });
+      // Update cacti
+      for (let i = cacti.length - 1; i >= 0; i--) {
+        cacti[i].x += cacti[i].velocity;
 
-      cactusArray.forEach(c => {
-        if (dino.x < c.x + c.width &&
-            dino.x + dino.width > c.x &&
-            dino.y < c.y + c.height &&
-            dino.y + dino.height > c.y) {
+        // Check collision
+        if (checkCollision(dino, cacti[i])) {
           endGame();
+          return;
         }
-      });
 
-      draw();
-      requestAnimationFrame(update);
+        // Score on passing cactus
+        if (cacti[i].x + cacti[i].width < dino.x && !cacti[i].scored) {
+          cacti[i].scored = true;
+          score++;
+          scoreCounter.textContent = score;
+        }
+
+        // Remove off-screen cacti
+        if (cacti[i].x < -50) {
+          cacti.splice(i, 1);
+        }
+      }
+
+      // Spawn cacti
+      frameCounter++;
+      if (frameCounter > cactusSpawnRate) {
+        spawnCactus();
+        frameCounter = 0;
+        cactusSpawnRate = Math.max(80, cactusSpawnRate - 2);
+      }
     }
 
-    function startGameLoop() {
-      update();
+    function draw() {
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw background and ground
+      ctx.fillStyle = '#87CEEB';
+      ctx.fillRect(0, 0, canvas.width, canvas.height / 2);
+      drawGround();
+
+      // Draw game elements
+      drawDino();
+      cacti.forEach(drawCactus);
+    }
+
+    function startGame() {
+      gameTitle.classList.add('title-move-up');
+      setTimeout(() => {
+        gameStarted = true;
+        gameTitle.style.pointerEvents = 'none';
+      }, 800);
     }
 
     function endGame() {
       gameOver = true;
+      gameStarted = false;
+      gameOverScreen.style.display = 'block';
+      finalScore.textContent = score;
 
-      if (score === 18) {
-        canvas.style.display = "none";
-        scoreDisplay.style.display = "none";
-        bombVideo.style.display = "block";
-        bombVideo.play();
-        bombVideo.onended = () => { window.location.href = "specialday.html"; };
-      } else {
-        canvas.style.display = "none";
-        scoreDisplay.style.display = "none";
-        restartContainer.style.display = "block";
-        if (score < 18) {
-          failMessage.innerText = "cmon you cant lie abt your age here lmaoo";
-        } else {
-          failMessage.innerText = "nah i dont believe you???!!!";
-        }
+      if (score < 18) {
+        gameOverMessage.textContent = "CMON YOU CAN'T LIE";
+      } else if (score > 18) {
+        gameOverMessage.textContent = "NAH I DON'T BELIEVE YOU";
+      } else if (score === 18) {
+        gameOverMessage.textContent = "YOU DID IT!";
+        // Play bomb video
+        setTimeout(() => {
+          window.location.href = "bomb.html";
+        }, 2000);
       }
     }
 
-    restartBtn.addEventListener("click", () => {
-      resetGame();
-      startGameLoop();
+    function restartGame() {
+      score = 0;
+      gameStarted = false;
+      gameOver = false;
+      dino.y = canvas.height - 120;
+      dino.velocityY = 0;
+      dino.jumping = false;
+      cacti = [];
+      frameCounter = 0;
+      cactusSpawnRate = 150;
+      scoreCounter.textContent = '0';
+      gameOverScreen.style.display = 'none';
+      gameTitle.classList.remove('title-move-up');
+      gameTitle.style.animation = 'none';
+      setTimeout(() => {
+        gameTitle.style.animation = 'bounceIn 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards';
+      }, 10);
+    }
+
+    function gameLoop() {
+      update();
+      draw();
+      requestAnimationFrame(gameLoop);
+    }
+
+    // Event listeners
+    document.addEventListener('keydown', (e) => {
+      if (e.key === ' ') {
+        e.preventDefault();
+        if (!gameStarted) {
+          startGame();
+        } else {
+          jump();
+        }
+      }
     });
 
-    window.addEventListener("load", () => {
-      setTimeout(startPreGameAnimation, 500);
+    document.addEventListener('click', () => {
+      if (!gameStarted) {
+        startGame();
+      } else {
+        jump();
+      }
     });
+
+    restartBtn.addEventListener('click', restartGame);
+
+    // Start game loop
+    gameLoop();
   </script>
 </body>
 </html>
