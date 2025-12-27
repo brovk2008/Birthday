@@ -206,9 +206,13 @@
     }
 
     function updateCountdown() {
-      glassBreakEffect(() => {
-        window.location.href = "dino.html";
-      });
+      const targetDate = new Date("2026-01-02T00:00:00Z").getTime();
+      const now = new Date().getTime();
+      const difference = targetDate - now;
+
+      if (difference <= 0) {
+        glassBreakEffect(() => {
+          window.location.href = "dino.html";
         });
         return;
       }
