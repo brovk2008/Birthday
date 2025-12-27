@@ -206,7 +206,7 @@
     }
 
     function updateCountdown() {
-      const targetDate = new Date("2026-01-02T00:00:00Z").getTime();
+      const targetDate = new Date(Date.now() + 60000).getTime();
       const now = new Date().getTime();
       const difference = targetDate - now;
 
