@@ -375,26 +375,51 @@
     }
 
     // Event listeners
+    // Spacebar support (use code for reliability)
     document.addEventListener('keydown', (e) => {
-      if (e.key === ' ') {
+      if (e.code === 'Space') {
         e.preventDefault();
-        if (!gameStarted) {
-          startGame();
-        } else {
-          jump();
-        }
-      }
-    });
-
-    document.addEventListener('click', () => {
-      if (!gameStarted) {
-        startGame();
-      } else {
+        if (!gameStarted) return; // space only jumps once started
         jump();
       }
     });
 
-    restartBtn.addEventListener('click', restartGame);
+    // Click / touch support on canvas
+    canvas.addEventListener('click', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      // If game not started, only start when clicking the dino area
+      if (!gameStarted && !gameOver) {
+        if (x >= dino.x && x <= dino.x + dino.width && y >= dino.y && y <= dino.y + dino.height) {
+          startGame();
+        }
+        return;
+      }
+      if (gameStarted && !gameOver) jump();
+    });
+
+    // Touch support for mobile devices
+    canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      const touch = e.touches[0];
+      const rect = canvas.getBoundingClientRect();
+      const x = touch.clientX - rect.left;
+      const y = touch.clientY - rect.top;
+      if (!gameStarted && !gameOver) {
+        if (x >= dino.x && x <= dino.x + dino.width && y >= dino.y && y <= dino.y + dino.height) {
+          startGame();
+        }
+        return;
+      }
+      if (gameStarted && !gameOver) jump();
+    }, { passive: false });
+
+    // Restart button - reset and animate title back
+    restartBtn.addEventListener('click', () => {
+      restartGame();
+      // auto-start if user wants: leave paused so they can click dino
+    });
 
     // Start game loop
     gameLoop();
